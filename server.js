@@ -2,10 +2,10 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
-var axios = require("axios");
+var request = require("request");
 var cheerio = require("cheerio");
 
-var db = require("./models");
+// var db = require("./models");
 
 var PORT = 3000;
 
@@ -16,9 +16,27 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // var mongodb = mongodb:<dbuser>:<dbpassword>@ds263670.mlab.com:63670/heroku_q00t7w80
-mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/pitchfork_scraper");
+// mongoose.Promise = Promise;
+// mongoose.connect("mongodb://localhost/pitchfork_scraper");
 
-app.listen(PORT, function() {
+app.get("/scrape", (req, res) => {
+
+    request("https://pitchfork.com/features/", function(error, response, html) {
+
+        var $ = cheerio.load(html);
+
+        $(".title").each(element => {
+            var title = $(element).children("a").text();
+            var link = $(element).children("a").attr("href");
+
+            if (title && link) {
+                console.log(title, link)
+            }
+        })
+        
+    })
+})
+
+app.listen(PORT, () => {
     console.log("App running on port " + PORT + "!");
 });
