@@ -4,6 +4,7 @@ var logger = require("morgan");
 var mongoose = require("mongoose");
 var axios = require("axios");
 var cheerio = require("cheerio");
+var exphbs = require("express-handlebars");
 
 var db = require("./models");
 
@@ -15,11 +16,14 @@ app.use(logger("dev"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+
 mongoose.connect("mongodb://localhost/trainerRoadDB");
 
-app.get("/scrape", function(req, res) {
+app.get("/scrape", (req, res) => {
 
-  axios.get("http://blog.trainerroad.com/").then(function(response) {
+  axios.get("http://blog.trainerroad.com/").then((response) => {
 
     var $ = cheerio.load(response.data);
 
@@ -31,68 +35,54 @@ app.get("/scrape", function(req, res) {
       results.link = $(this).children("a").attr("href");
 
       db.Article.create(results)
-        .then(function(dbArticle) {
+        .then((dbArticle) => {
 
           console.log(dbArticle);
         })
-        .catch(function(err) {
-          // If an error occurred, send it to the client
+        .catch((err) => {
+
           return res.json(err);
         });
     });
   });
 });
 
-// Route for getting all Articles from the db
-app.get("/articles", function(req, res) {
-  // Grab every document in the Articles collection
+app.get("/articles", (req, res) => {
+
   db.Article.find({})
-    .then(function(dbArticle) {
-      // If we were able to successfully find Articles, send them back to the client
+    .then((dbArticle) => {
       res.json(dbArticle);
     })
-    .catch(function(err) {
-      // If an error occurred, send it to the client
+    .catch((err) => {
       res.json(err);
     });
 });
 
-// Route for grabbing a specific Article by id, populate it with it's note
-app.get("/articles/:id", function(req, res) {
-  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+app.get("/articles/:id", (req, res) => {
   db.Article.findOne({ _id: req.params.id })
-    // ..and populate all of the notes associated with it
     .populate("note")
-    .then(function(dbArticle) {
-      // If we were able to successfully find an Article with the given id, send it back to the client
+    .then((dbArticle) => {
       res.json(dbArticle);
     })
-    .catch(function(err) {
-      // If an error occurred, send it to the client
+    .catch((err) => {
       res.json(err);
     });
 });
 
-// Route for saving/updating an Article's associated Note
-app.post("/articles/:id", function(req, res) {
-  // Create a new note and pass the req.body to the entry
+
+app.post("/articles/:id", (req, res) => {
+
   db.Note.create(req.body)
-    .then(function(dbNote) {
-      // If a Note was created successfully, find one Article with an `_id` equal to `req.params.id`. Update the Article to be associated with the new Note
-      // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
-      // Since our mongoose query returns a promise, we can chain another `.then` which receives the results of the query
-      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+    .then(dbNote => {db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
     })
-    .then(function(dbArticle) {
-      // If we were able to successfully update an Article, send it back to the client
+    .then((dbArticle) => {
       res.json(dbArticle);
     })
-    .catch(function(err) {
-      // If an error occurred, send it to the client
+    .catch((err) => {
       res.json(err);
     });
 });
 
-app.listen(PORT, function() {
+app.listen(PORT, () => {
   console.log("App running on port " + PORT + "!");
 });
