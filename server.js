@@ -19,7 +19,7 @@ app.use(express.static("public"));
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-mongoose.connect("mongodb://localhost/trainerRoadDB");
+mongoose.connect("mongodb://localhost/trainerRoadDB");  
 
 app.get("/scrape", (req, res) => {
 
@@ -34,10 +34,10 @@ app.get("/scrape", (req, res) => {
       results.title = $(this).text();
       results.link = $(this).children("a").attr("href");
 
-      db.Article.create(results)
-        .then((dbArticle) => {
+      db.Posts.create(results)
+        .then((dbPosts) => {
 
-          console.log(dbArticle);
+          console.log(dbPosts);
         })
         .catch((err) => {
 
@@ -47,19 +47,30 @@ app.get("/scrape", (req, res) => {
   });
 });
 
-app.get("/articles", (req, res) => {
+app.get("/", (req, res) => {
+    let hbsObject;
+    db.Posts.find({}).then(dbPosts => {
+        hbsObject = {
+            documents: dbPosts
+        }
+        res.render("index", hbsObject)
+    })
 
-  db.Article.find({})
-    .then((dbArticle) => {
-      res.json(dbArticle);
+})
+
+app.get("/posts", (req, res) => {
+
+  db.Posts.find({})
+    .then((dbPosts) => {
+      res.json(dbPosts);
     })
     .catch((err) => {
       res.json(err);
     });
 });
 
-app.get("/articles/:id", (req, res) => {
-  db.Article.findOne({ _id: req.params.id })
+app.get("/posts/:id", (req, res) => {
+  db.Posts.findOne({ _id: req.params.id })
     .populate("note")
     .then((dbArticle) => {
       res.json(dbArticle);
@@ -70,13 +81,13 @@ app.get("/articles/:id", (req, res) => {
 });
 
 
-app.post("/articles/:id", (req, res) => {
+app.post("/posts/:id", (req, res) => {
 
   db.Note.create(req.body)
     .then(dbNote => {db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
     })
-    .then((dbArticle) => {
-      res.json(dbArticle);
+    .then((dbPosts) => {
+      res.json(dbPosts);
     })
     .catch((err) => {
       res.json(err);
