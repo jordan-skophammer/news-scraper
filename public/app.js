@@ -1,8 +1,8 @@
-$.getJSON("/articles", data => {
+$.getJSON("/posts", function(data) {
     // For each one
-    for (const item of data) {
+    for (var i = 0; i < data.length; i++) {
       // Display the apropos information on the page
-      $("#post").append(`<p data-id='${data[item]._id}'> ${data[item].title} <br /> ${data[item].link} </p>`);
+      $("#post").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
     }
   });
   
@@ -17,7 +17,7 @@ $.getJSON("/articles", data => {
     // Now make an ajax call for the Article
     $.ajax({
       method: "GET",
-      url: "/articles/" + thisId
+      url: "/posts/" + thisId
     })
       // With that done, add the note information to the page
       .then(data => {
@@ -42,14 +42,14 @@ $.getJSON("/articles", data => {
   });
   
   // When you click the savenote button
-  $(document).on("click", "#savenote", function() {
+  $(document).on("click", "#savenote", () => {
     // Grab the id associated with the article from the submit button
     var thisId = $(this).attr("data-id");
   
     // Run a POST request to change the note, using what's entered in the inputs
     $.ajax({
       method: "POST",
-      url: "/articles/" + thisId,
+      url: "/posts/" + thisId,
       data: {
         // Value taken from title input
         title: $("#titleinput").val(),
@@ -58,7 +58,7 @@ $.getJSON("/articles", data => {
       }
     })
       // With that done
-      .then(function(data) {
+      .then((data) => {
         // Log the response
         console.log(data);
         // Empty the notes section
