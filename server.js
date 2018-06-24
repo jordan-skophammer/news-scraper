@@ -58,6 +58,17 @@ app.get("/", (req, res) => {
 
 })
 
+app.get("/favorites", (req, res) => {
+    let hbsObject;
+    db.Posts.find({}).then(dbPosts => {
+        hbsObject = {
+            documents: dbPosts
+        }
+        res.render("favorites", hbsObject)
+    })
+
+})
+
 app.get("/posts", (req, res) => {
 
   db.Posts.find({})
@@ -71,21 +82,7 @@ app.get("/posts", (req, res) => {
 
 app.get("/posts/:id", (req, res) => {
   db.Posts.findOne({ _id: req.params.id })
-    .populate("note")
-    .then((dbArticle) => {
-      res.json(dbArticle);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
-});
-
-
-app.post("/posts/:id", (req, res) => {
-
-  db.Note.create(req.body)
-    .then(dbNote => {db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
-    })
+    // .populate("note")
     .then((dbPosts) => {
       res.json(dbPosts);
     })
@@ -93,6 +90,20 @@ app.post("/posts/:id", (req, res) => {
       res.json(err);
     });
 });
+
+
+// app.post("/posts/:id", (req, res) => {
+
+//   db.Note.create(req.body)
+//     .then(dbNote => {db.Posts.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+//     })
+//     .then((dbPosts) => {
+//       res.json(dbPosts);
+//     })
+//     .catch((err) => {
+//       res.json(err);
+//     });
+// });
 
 app.listen(PORT, () => {
   console.log("App running on port " + PORT + "!");
