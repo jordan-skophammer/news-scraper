@@ -1,9 +1,22 @@
   <body>
-    <div id="wrapper">
-      <h1>Note Scraper</h1>
-      <h2><i>If you can do this...the homework should be no problem.</i></h2>
-      <div id="post"></div>
-      <div id="notes"></div>
+    <div id="container">
+        <div class="row">
+            <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                <a class="navbar-brand" href="#">TrainerRoad Blog Posts</a>
+                </div>
+                <ul class="nav navbar-nav">
+                <li><button id="getPosts" class="btn btn-danger">Get Posts</button></li>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Favorites</a></li>
+                </ul>
+            </div>
+            </nav>
+            <div class="col-md-12">
+                <div id="post">Press the "Get Posts" button.</div>
+                <div id="notes"></div>
+            </div>
+        </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   </body>
