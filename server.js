@@ -22,9 +22,7 @@ app.set("view engine", "handlebars");
 
 const mongoDB = process.env.MONGODB_URI || "mongodb://localhost/trainerRoadDB";
 mongoose.Promise = Promise;
-mongoose.connect(mongoDB)
-// mongoose.connect("mongodb://localhost/trainerRoadDB");
-
+mongoose.connect(MONGODB_URI)
 
 app.get("/scrape", (req, res) => {
 
