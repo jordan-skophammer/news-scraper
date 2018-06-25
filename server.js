@@ -19,7 +19,11 @@ app.use(express.static("public"));
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-mongoose.connect("mongodb://localhost/trainerRoadDB");  
+
+const mongoDB = process.env.MONGODB_URI || "mongodb://localhost/trainerRoadDB";
+mongoose.connect(mongoDB)
+// mongoose.connect("mongodb://localhost/trainerRoadDB");
+
 
 app.get("/scrape", (req, res) => {
 
