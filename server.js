@@ -20,7 +20,7 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 
-const mongoDB = process.env.MONGODB_URI || "mongodb://localhost/trainerRoadDB";
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/trainerRoadDB";
 mongoose.Promise = Promise;
 mongoose.connect(MONGODB_URI)
 
